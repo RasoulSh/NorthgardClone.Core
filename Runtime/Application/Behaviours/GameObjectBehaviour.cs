@@ -12,18 +12,31 @@ namespace Northgard.Core.Application.Behaviours
         private Transform _transform;
         private Collider BoundaryCollider => _boundaryCollider ??= GetComponent<Collider>();
         private Transform Transform => _transform ??= transform;
+
         public virtual T Data => data;
 
         public bool IsInstance { get; private set; }
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnPositionChanged;
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnRotationChanged;
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnDestroying; 
-        public IGameObjectBehaviour<T> Instantiate()
+        public IGameObjectBehaviour<T> Instantiate(T initialData = null)
         {
             var instance = Instantiate(this);
-            instance.data.RenewId();
+            instance.Data.ConvertToInstance();
+            if (initialData is { isInstance: true })
+            {
+                instance.Initialize(initialData);
+            }
             instance.IsInstance = true;
             return instance;
+        }
+
+        protected virtual void Initialize(T initialData)
+        {
+            Data.id = initialData.id;
+            Data.title = initialData.title;
+            SetPosition(initialData.position);
+            SetRotation(initialData.rotation);
         }
 
         public void Destroy()
@@ -45,7 +58,7 @@ namespace Northgard.Core.Application.Behaviours
 
         public void SetRotation(Quaternion rotation)
         {
-            data.rotation = Transform.rotation = rotation;
+            Data.rotation = Transform.rotation = rotation;
             UpdateLocationData();
             OnRotationChanged?.Invoke(this);
         }
@@ -54,9 +67,13 @@ namespace Northgard.Core.Application.Behaviours
 
         private void UpdateLocationData()
         {
-            data.position = Transform.position;
-            data.rotation = Transform.rotation;
-            data.bounds = BoundaryCollider.bounds;
+            if (Data == null)
+            {
+                return;
+            }
+            Data.position = Transform.position;
+            Data.rotation = Transform.rotation;
+            Data.bounds = BoundaryCollider.bounds;
         }
     }
 }

@@ -7,15 +7,18 @@ namespace Northgard.Core.Entities
     [Serializable]
     public abstract class GameObjectEntity
     {
-        [ReadOnlyField] public string id = GenerateGuid();
+        [HideInInspector] public bool isInstance;
+        [ReadOnlyField] [HideIfEmpty] public string id;
+        [ReadOnlyField] public string prefabId = GenerateGuid();
         public string title;
         [HideInInspector] public Vector3 position;
         [HideInInspector] public Quaternion rotation;
         [HideInInspector] public Bounds bounds;
 
-        internal void RenewId()
+        internal void ConvertToInstance()
         {
             id = GenerateGuid();
+            isInstance = true;
         }
 
         private static string GenerateGuid()
