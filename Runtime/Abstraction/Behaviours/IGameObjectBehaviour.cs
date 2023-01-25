@@ -7,7 +7,7 @@ namespace Northgard.Core.Abstraction.Behaviours
     {
         T Data { get; }
         bool IsInstance { get; }
-        IGameObjectBehaviour<T> Instantiate(T initialData = null);
+        IGameObjectBehaviour<T> Instantiate();
         void Destroy();
         void SetPosition(Vector3 position);
         void SetRotation(Quaternion rotation);

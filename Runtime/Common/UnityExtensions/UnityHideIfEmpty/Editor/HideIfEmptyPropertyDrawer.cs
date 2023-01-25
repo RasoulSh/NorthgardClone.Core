@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Northgard.Core.Common.UnityExtensions.UnityReadOnlyField.Editor
+namespace Northgard.Core.Common.UnityExtensions.UnityHideIfEmpty.Editor
 {
     [CustomPropertyDrawer(typeof(HideIfEmptyAttribute))]
     public class HideIfEmptyPropertyDrawer : PropertyDrawer

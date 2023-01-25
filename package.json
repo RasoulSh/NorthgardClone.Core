@@ -1,6 +1,6 @@
 {
   "name": "com.northgard.core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Northgard.Core",
   "description": "Northgard Core Package",
   "unity": "2021.1",

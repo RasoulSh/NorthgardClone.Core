@@ -1,4 +1,5 @@
 ﻿using Northgard.Core.Abstraction.Behaviours;
+using Northgard.Core.Common.UnityExtensions.TransformUtil;
 using Northgard.Core.Entities;
 using UnityEngine;
 
@@ -8,9 +9,9 @@ namespace Northgard.Core.Application.Behaviours
     public abstract class GameObjectBehaviour<T> : MonoBehaviour, IGameObjectBehaviour<T> where T : GameObjectEntity
     {
         [SerializeField] private T data;
-        private Collider _boundaryCollider;
+        private BoxCollider _boundaryCollider;
         private Transform _transform;
-        private Collider BoundaryCollider => _boundaryCollider ??= GetComponent<Collider>();
+        private BoxCollider BoundaryCollider => _boundaryCollider ??= GetComponent<BoxCollider>();
         private Transform Transform => _transform ??= transform;
 
         public virtual T Data => data;
@@ -18,25 +19,25 @@ namespace Northgard.Core.Application.Behaviours
         public bool IsInstance { get; private set; }
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnPositionChanged;
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnRotationChanged;
-        public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnDestroying; 
-        public IGameObjectBehaviour<T> Instantiate(T initialData = null)
+        public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnDestroying;
+
+        public IGameObjectBehaviour<T> Instantiate()
         {
             var instance = Instantiate(this);
             instance.Data.ConvertToInstance();
-            if (initialData is { isInstance: true })
-            {
-                instance.Initialize(initialData);
-            }
             instance.IsInstance = true;
             return instance;
         }
 
-        protected virtual void Initialize(T initialData)
+        public virtual void Initialize(T initialData)
         {
-            Data.id = initialData.id;
-            Data.title = initialData.title;
-            SetPosition(initialData.position);
-            SetRotation(initialData.rotation);
+            if (initialData.isInstance == false)
+            {
+                return;
+            }
+            data = initialData;
+            SetPosition(initialData.position, true);
+            SetRotation(initialData.rotation, true);
         }
 
         public void Destroy()
@@ -49,31 +50,44 @@ namespace Northgard.Core.Application.Behaviours
             Destroy(gameObject);
         }
 
-        public void SetPosition(Vector3 position)
+        public void SetPosition(Vector3 position) => SetPosition(position, false);
+        private void SetPosition(Vector3 position, bool ignoreNotify)
         {
             Transform.position = position;
-            UpdateLocationData();
-            OnPositionChanged?.Invoke(this);
+            if (ignoreNotify == false)
+            {
+                UpdateLocationData();
+                OnPositionChanged?.Invoke(this);   
+            }
         }
 
-        public void SetRotation(Quaternion rotation)
+        public void SetRotation(Quaternion rotation) => SetRotation(rotation, false);
+        private void SetRotation(Quaternion rotation, bool ignoreNotify)
         {
             Data.rotation = Transform.rotation = rotation;
-            UpdateLocationData();
-            OnRotationChanged?.Invoke(this);
+            if (ignoreNotify == false)
+            {
+                UpdateLocationData();
+                OnRotationChanged?.Invoke(this);   
+            }
         }
 
         protected virtual void OnValidate() => UpdateLocationData();
 
         private void UpdateLocationData()
         {
+            #if UNITY_EDITOR
             if (Data == null)
             {
                 return;
             }
+            #endif
             Data.position = Transform.position;
             Data.rotation = Transform.rotation;
-            Data.bounds = BoundaryCollider.bounds;
+            var col = BoundaryCollider;
+            var trans = Transform;
+            Data.boundsSize = col.size.Multiply(trans.lossyScale);
+            data.boundsCenter = col.center + trans.position;
         }
     }
 }
