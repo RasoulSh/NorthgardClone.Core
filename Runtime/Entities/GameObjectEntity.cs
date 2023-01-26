@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 using Northgard.Core.Common.UnityExtensions.UnityHideIfEmpty;
 using Northgard.Core.Common.UnityExtensions.UnityReadOnlyField;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace Northgard.Core.Entities
         [HideInInspector] public Vector3 boundsCenter;
         [HideInInspector] public Vector3 boundsSize;
         public string title;
-        [XmlIgnore] public Bounds Bounds => new Bounds(boundsCenter, boundsSize);
+        [JsonIgnore][XmlIgnore] public Bounds Bounds => new Bounds(boundsCenter, boundsSize);
 
         internal void ConvertToInstance()
         {
