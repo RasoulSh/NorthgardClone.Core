@@ -2,12 +2,15 @@
 using Northgard.Core.Common.UnityExtensions.TransformUtil;
 using Northgard.Core.Entities;
 using UnityEngine;
+using Zenject;
+using ILogger = Northgard.Core.Abstraction.Logger.ILogger;
 
 namespace Northgard.Core.Application.Behaviours
 {
     [RequireComponent(typeof(Collider))]
     public abstract class GameObjectBehaviour<T> : MonoBehaviour, IGameObjectBehaviour<T> where T : GameObjectEntity
     {
+        [Inject] private ILogger _logger;
         [SerializeField] private T data;
         private BoxCollider _boundaryCollider;
         private Transform _transform;
@@ -31,8 +34,14 @@ namespace Northgard.Core.Application.Behaviours
 
         public virtual void Initialize(T initialData)
         {
+            if (initialData == null)
+            {
+                _logger.LogError("You are trying to initialize a game object using null data", this);
+                return;
+            }
             if (initialData.isInstance == false)
             {
+                _logger.LogError("You are trying to initialize a game object that is not an instance", this);
                 return;
             }
             data = initialData;

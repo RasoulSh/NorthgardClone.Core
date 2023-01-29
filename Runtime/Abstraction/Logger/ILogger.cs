@@ -2,8 +2,8 @@
 {
     public interface ILogger
     {
-        void LogMessage(string msg);
-		void LogWarning(string msg);
-		void LogError(string msg);
+        void LogMessage(string msg, object context);
+		void LogWarning(string msg, object context);
+		void LogError(string msg, object context);
     }
 }
