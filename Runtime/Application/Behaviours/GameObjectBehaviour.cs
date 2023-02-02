@@ -1,4 +1,5 @@
 ﻿using Northgard.Core.Abstraction.Behaviours;
+using Northgard.Core.Common;
 using Northgard.Core.Common.UnityExtensions.TransformUtil;
 using Northgard.Core.Entities;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Northgard.Core.Application.Behaviours
     [RequireComponent(typeof(Collider))]
     public abstract class GameObjectBehaviour<T> : MonoBehaviour, IGameObjectBehaviour<T> where T : GameObjectEntity
     {
+        [Inject] private DiContainer _container;
         [Inject] private ILogger _logger;
         [SerializeField] private T data;
         private BoxCollider _boundaryCollider;
@@ -23,10 +25,14 @@ namespace Northgard.Core.Application.Behaviours
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnPositionChanged;
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnRotationChanged;
         public event IGameObjectBehaviour<T>.GameObjectBehaviourDelegate OnDestroying;
+        public TC AddComponent<TC>() where TC : Component
+        {
+            return _container.InstantiateComponent<TC>(gameObject);
+        }
 
         public IGameObjectBehaviour<T> Instantiate()
         {
-            var instance = Instantiate(this);
+            var instance = ObjectCreator.InstantiatePrefab(this);
             instance.Data.ConvertToInstance();
             instance.IsInstance = true;
             return instance;

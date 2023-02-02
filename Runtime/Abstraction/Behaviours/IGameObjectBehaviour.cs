@@ -15,5 +15,7 @@ namespace Northgard.Core.Abstraction.Behaviours
         event GameObjectBehaviourDelegate OnRotationChanged;
         event GameObjectBehaviourDelegate OnDestroying;
         public delegate void GameObjectBehaviourDelegate(IGameObjectBehaviour<T> objectBehaviour);
+
+        TC AddComponent<TC>() where TC : Component;
     }
 }
