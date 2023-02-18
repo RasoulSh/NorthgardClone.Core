@@ -17,5 +17,6 @@ namespace Northgard.Core.GameObjectBase
         public delegate void GameObjectBehaviourDelegate(IGameObjectBehaviour<T> objectBehaviour);
 
         TC AddComponent<TC>() where TC : Component;
+        GameObject CloneFakeInstance();
     }
 }

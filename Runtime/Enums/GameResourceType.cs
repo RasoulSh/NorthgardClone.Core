@@ -1,4 +1,4 @@
-﻿namespace Northgard.Enterprise.Enums
+﻿namespace Northgard.Core.Enums
 {
     public enum GameResourceType
     {

@@ -103,5 +103,12 @@ namespace Northgard.Core.GameObjectBase
             Data.boundsSize = col.size.Multiply(trans.lossyScale);
             data.boundsCenter = col.center + trans.position;
         }
+        
+        public GameObject CloneFakeInstance()
+        {
+            var fakeInstance = Instantiate(this).gameObject;
+            Destroy(fakeInstance.GetComponent(GetType()));
+            return fakeInstance;
+        }
     }
 }
