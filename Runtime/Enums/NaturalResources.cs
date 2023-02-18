@@ -1,4 +1,4 @@
-﻿namespace Northgard.Core.Enums
+﻿namespace Northgard.Enterprise.Enums
 {
     public enum NaturalResources
     {
